@@ -4,38 +4,96 @@
   font-weight: bold;
 }
 
-.jumbotron {
+.bg-gradient-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-image {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
 .card {
-  transition: transform 0.2s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 15px;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.product-card {
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.btn {
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: white;
+}
+
+.stats-section {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+.stat-item h3 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.cta-section {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 50vh;
+    padding: 3rem 0;
   }
-  to {
-    transform: rotate(360deg);
+
+  .display-4 {
+    font-size: 2.5rem;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .display-5 {
+    font-size: 2rem;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
