@@ -1,2 +1,98 @@
-# Auto detect text files and perform LF normalization
+# =========================
+# AUTO NORMALIZE LINE ENDINGS
+# =========================
 * text=auto
+
+
+# =========================
+# PYTHON
+# =========================
+*.py text eol=lf
+*.pyw text eol=lf
+
+
+# =========================
+# JAVASCRIPT / REACT
+# =========================
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+
+
+# =========================
+# CONFIG FILES
+# =========================
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.env text eol=lf
+
+
+# =========================
+# SHELL / SCRIPT FILES
+# =========================
+*.sh text eol=lf
+*.bash text eol=lf
+
+
+# =========================
+# WINDOWS SCRIPTS
+# =========================
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+
+# =========================
+# BINARY FILES
+# =========================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+
+
+# =========================
+# DJANGO / DATABASE
+# =========================
+*.sqlite3 binary
+*.db binary
+
+
+# =========================
+# LOCKFILES
+# =========================
+package-lock.json -diff
+yarn.lock -diff
+pnpm-lock.yaml -diff
+
+
+# =========================
+# VITE BUILD FILES
+# =========================
+dist/** linguist-generated=true
+build/** linguist-generated=true
+
+
+# =========================
+# MINIFIED FILES
+# =========================
+*.min.js -diff
+*.min.css -diff
