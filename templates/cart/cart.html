@@ -1,0 +1,130 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Your Cart — FFAng{% endblock %}
+
+{% block content %}
+<div class="container section-gap">
+  <h1 class="page-title mb-4">Your Cart
+    {% if cart.count > 0 %}<span class="cart-count-pill">{{ cart.count }}</span>{% endif %}
+  </h1>
+
+  {% if cart.items.all %}
+  <div class="row g-4">
+
+    <!-- ═══ CART ITEMS ═══ -->
+    <div class="col-lg-8">
+      <div class="cart-items-list">
+        {% for item in cart.items.all %}
+        <div class="cart-item" id="cart-item-{{ item.id }}">
+          <div class="cart-item-img">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+            {% else %}
+              <div class="cart-item-img-placeholder">ᚠ</div>
+            {% endif %}
+          </div>
+          <div class="cart-item-info flex-grow-1">
+            <a href="{% url 'product_detail' item.product.slug %}" class="cart-item-name">{{ item.product.name }}</a>
+            {% if item.variant %}
+            <span class="cart-item-variant">{{ item.variant.size }}{% if item.variant.color %} / {{ item.variant.color }}{% endif %}</span>
+            {% endif %}
+            <span class="cart-item-price">${{ item.product.price }}</span>
+          </div>
+          <div class="cart-item-actions">
+            <!-- Qty control -->
+            <div class="cart-qty-wrap">
+              <form action="{% url 'cart_update' %}" method="post" class="cart-qty-form">
+                {% csrf_token %}
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <button type="button" class="qty-btn-sm" onclick="cartQty(this, -1)"><i class="bi bi-dash"></i></button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" class="qty-input-sm" onchange="this.form.submit()">
+                <button type="button" class="qty-btn-sm" onclick="cartQty(this, 1)"><i class="bi bi-plus"></i></button>
+              </form>
+            </div>
+            <!-- Subtotal -->
+            <span class="cart-item-subtotal">${{ item.subtotal }}</span>
+            <!-- Remove -->
+            <form action="{% url 'cart_remove' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <button type="submit" class="cart-remove-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Continue shopping -->
+      <a href="{% url 'product_list' %}" class="btn ffang-btn-ghost mt-3">
+        <i class="bi bi-arrow-left me-2"></i> Continue Shopping
+      </a>
+    </div>
+
+    <!-- ═══ ORDER SUMMARY ═══ -->
+    <div class="col-lg-4">
+      <div class="cart-summary">
+        <h5 class="cart-summary-title">Order Summary</h5>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>${{ cart.total }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>{% if cart.total >= 50 %}<span class="text-success">Free</span>{% else %}$9.99{% endif %}</span>
+        </div>
+        {% if cart.total < 50 %}
+        <div class="free-shipping-bar">
+          <p class="small text-muted mb-1">Add ${{ 50|floatformat:2 }} more for free shipping</p>
+          <div class="progress" style="height:4px;">
+            <div class="progress-bar bg-accent" style="width: {{ cart.total|floatformat:0 }}%"></div>
+          </div>
+        </div>
+        {% endif %}
+        <hr class="summary-divider">
+        <div class="summary-row summary-total">
+          <span>Total</span>
+          <span>${{ cart.total|add:"9.99" }}</span>
+        </div>
+        <a href="{% url 'checkout' %}" class="btn ffang-btn-primary w-100 btn-lg mt-3">
+          Proceed to Checkout <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+        <div class="cart-secure-note mt-3 text-center">
+          <i class="bi bi-shield-lock me-1"></i> Secure, encrypted checkout
+        </div>
+        <!-- Payment icons -->
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <span class="payment-badge-sm">Visa</span>
+          <span class="payment-badge-sm">MC</span>
+          <span class="payment-badge-sm">ArCa</span>
+          <span class="payment-badge-sm">PayPal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Empty cart -->
+  <div class="empty-state text-center py-5">
+    <div class="empty-state-icon">ᚦ</div>
+    <h3>Your cart is empty</h3>
+    <p class="text-muted">The gods demand you fill it with worthy designs.</p>
+    <a href="{% url 'product_list' %}" class="btn ffang-btn-primary btn-lg mt-3 px-5">
+      Browse Collection <i class="bi bi-arrow-right ms-2"></i>
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function cartQty(btn, delta) {
+  const form = btn.closest('form');
+  const input = form.querySelector('input[name="quantity"]');
+  const newVal = Math.max(1, Math.min(99, parseInt(input.value) + delta));
+  input.value = newVal;
+  form.submit();
+}
+</script>
+{% endblock %}

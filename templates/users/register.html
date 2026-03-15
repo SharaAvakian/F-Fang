@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Create Account — FFAng{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+
+        <div class="auth-card">
+          <div class="auth-brand">
+            <span class="brand-rune">ᚠ</span>FFANG
+          </div>
+          <h2 class="auth-title">Join the clan</h2>
+          <p class="auth-sub">Create your free account</p>
+
+          <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert ffang-alert ffang-alert-error mb-3">
+              {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label">First Name *</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}<div class="field-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-6">
+                <label class="form-label">Last Name</label>
+                {{ form.last_name }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Username *</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="field-error">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email *</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="field-error">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Password *</label>
+              <div class="password-wrap">
+                {{ form.password }}
+                <button type="button" class="password-toggle" onclick="togglePwd('id_password', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              {% if form.password.errors %}<div class="field-error">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Confirm Password *</label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}<div class="field-error">{{ form.password2.errors.0 }}</div>{% endif %}
+            </div>
+
+            <button type="submit" class="btn ffang-btn-primary w-100 btn-lg">
+              Create Account <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+
+          <p class="auth-switch mt-4 text-center">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

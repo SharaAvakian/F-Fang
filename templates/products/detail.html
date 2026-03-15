@@ -1,0 +1,173 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} — FFAng{% endblock %}
+{% block meta_desc %}{{ product.description|truncatechars:150 }}{% endblock %}
+
+{% block content %}
+<div class="container section-gap">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb ffang-breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Shop</a></li>
+      {% if product.category %}<li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>{% endif %}
+      <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+
+    <!-- ═══ IMAGES ═══ -->
+    <div class="col-lg-6">
+      <div class="product-gallery">
+        <div class="product-main-img-wrap">
+          {% if product.image %}
+            <img id="mainProductImg" src="{{ product.image.url }}" alt="{{ product.name }}" class="product-main-img">
+          {% else %}
+            <div class="product-main-img-placeholder">
+              <span>ᚠ</span>
+            </div>
+          {% endif %}
+          {% if product.discount_percent %}
+            <span class="product-badge-sale-lg">-{{ product.discount_percent }}%</span>
+          {% endif %}
+        </div>
+
+        {% if product.image2 or product.image3 %}
+        <div class="product-thumbnails mt-3 d-flex gap-2">
+          {% if product.image %}
+          <div class="product-thumb active" onclick="switchImg(this, '{{ product.image.url }}')">
+            <img src="{{ product.image.url }}" alt="">
+          </div>
+          {% endif %}
+          {% if product.image2 %}
+          <div class="product-thumb" onclick="switchImg(this, '{{ product.image2.url }}')">
+            <img src="{{ product.image2.url }}" alt="">
+          </div>
+          {% endif %}
+          {% if product.image3 %}
+          <div class="product-thumb" onclick="switchImg(this, '{{ product.image3.url }}')">
+            <img src="{{ product.image3.url }}" alt="">
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ═══ PRODUCT INFO ═══ -->
+    <div class="col-lg-6">
+      {% if product.category %}
+      <span class="product-detail-cat">{{ product.category.name }}</span>
+      {% endif %}
+      <h1 class="product-detail-title">{{ product.name }}</h1>
+
+      <!-- Price -->
+      <div class="product-detail-price mb-3">
+        <span class="price-lg">${{ product.price }}</span>
+        {% if product.compare_price %}
+          <span class="price-original-lg">${{ product.compare_price }}</span>
+          <span class="price-saving">Save {{ product.discount_percent }}%</span>
+        {% endif %}
+      </div>
+
+      <p class="product-detail-desc">{{ product.description }}</p>
+
+      <!-- Add to cart form -->
+      <form action="{% url 'cart_add' %}" method="post" id="addToCartForm" class="mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+
+        <!-- Size selector -->
+        {% if sizes %}
+        <div class="variant-group mb-3">
+          <label class="variant-label">Size</label>
+          <div class="size-grid" id="sizeGrid">
+            {% for size in sizes %}
+            <input type="radio" name="size_select" id="size_{{ size }}" value="{{ size }}" class="size-radio" {% if forloop.first %}checked{% endif %}>
+            <label for="size_{{ size }}" class="size-btn">{{ size }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Color selector -->
+        {% if colors %}
+        <div class="variant-group mb-3">
+          <label class="variant-label">Color</label>
+          <div class="color-grid" id="colorGrid">
+            {% for color in colors %}
+            {% with v=variants|first %}
+            <input type="radio" name="color_select" id="color_{{ forloop.counter }}" value="{{ color }}" class="color-radio" {% if forloop.first %}checked{% endif %}>
+            <label for="color_{{ forloop.counter }}" class="color-btn" title="{{ color }}">{{ color }}</label>
+            {% endwith %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Hidden variant_id (set by JS) -->
+        <input type="hidden" name="variant_id" id="selectedVariantId" value="">
+
+        <!-- Quantity -->
+        <div class="variant-group mb-4">
+          <label class="variant-label">Quantity</label>
+          <div class="qty-wrap">
+            <button type="button" class="qty-btn" onclick="changeQty(-1)"><i class="bi bi-dash"></i></button>
+            <input type="number" name="quantity" id="qtyInput" value="1" min="1" max="99" class="qty-input">
+            <button type="button" class="qty-btn" onclick="changeQty(1)"><i class="bi bi-plus"></i></button>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn ffang-btn-primary btn-lg flex-grow-1">
+            <i class="bi bi-bag-plus me-2"></i> Add to Cart
+          </button>
+          <a href="{% url 'checkout' %}" class="btn ffang-btn-ghost btn-lg px-4">Buy Now</a>
+        </div>
+      </form>
+
+      <!-- Reassurance -->
+      <div class="product-assurance mt-4">
+        <div class="assurance-item"><i class="bi bi-truck text-accent"></i> Free shipping over $50</div>
+        <div class="assurance-item"><i class="bi bi-shield-check text-accent"></i> Secure checkout</div>
+        <div class="assurance-item"><i class="bi bi-arrow-counterclockwise text-accent"></i> 30-day returns</div>
+        <div class="assurance-item"><i class="bi bi-box-seam text-accent"></i> Printed on demand</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RELATED PRODUCTS ═══ -->
+  {% if related %}
+  <div class="mt-6">
+    <h3 class="section-title mb-4">You may also like</h3>
+    <div class="row g-4">
+      {% for rp in related %}
+      <div class="col-lg-3 col-md-4 col-6">
+        {% include "partials/product_card.html" with product=rp compact=True %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const variants = {{ variants|length }};
+function switchImg(thumb, url) {
+  document.getElementById('mainProductImg').src = url;
+  document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+function changeQty(delta) {
+  const input = document.getElementById('qtyInput');
+  const val = Math.max(1, Math.min(99, parseInt(input.value) + delta));
+  input.value = val;
+}
+</script>
+{% endblock %}

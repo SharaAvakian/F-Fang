@@ -1,0 +1,48 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Login — FFAng{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+
+        <div class="auth-card">
+          <div class="auth-brand">
+            <span class="brand-rune">ᚠ</span>FFANG
+          </div>
+          <h2 class="auth-title">Welcome back</h2>
+          <p class="auth-sub">Enter Valhalla</p>
+
+          <form method="post" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" name="username" class="form-control ffang-input" placeholder="your_username" autofocus required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Password</label>
+              <div class="password-wrap">
+                <input type="password" name="password" id="loginPassword" class="form-control ffang-input" placeholder="••••••••" required>
+                <button type="button" class="password-toggle" onclick="togglePwd('loginPassword', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+            <button type="submit" class="btn ffang-btn-primary w-100 btn-lg">
+              Login <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </form>
+
+          <p class="auth-switch mt-4 text-center">
+            No account? <a href="{% url 'register' %}">Create one free</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

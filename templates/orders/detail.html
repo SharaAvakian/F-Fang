@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+
+{% block title %}Order #{{ order.id }} — FFAng{% endblock %}
+
+{% block content %}
+<div class="container section-gap">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'order_history' %}" class="btn ffang-btn-ghost btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+    <h1 class="page-title mb-0">Order #{{ order.id }}</h1>
+    <span class="order-status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="checkout-card">
+        <h5 class="checkout-card-title">Items</h5>
+        {% for item in order.items.all %}
+        <div class="checkout-item">
+          <div class="checkout-item-name flex-grow-1">
+            <strong>{{ item.product_name }}</strong>
+            {% if item.size %}<span class="text-muted"> — {{ item.size }}{% if item.color %} / {{ item.color }}{% endif %}</span>{% endif %}
+          </div>
+          <span class="text-muted">×{{ item.quantity }}</span>
+          <div class="checkout-item-price">${{ item.subtotal }}</div>
+        </div>
+        {% endfor %}
+        <hr class="summary-divider">
+        <div class="summary-row"><span>Subtotal</span><span>${{ order.subtotal }}</span></div>
+        <div class="summary-row"><span>Shipping</span><span>{% if order.shipping_cost == 0 %}Free{% else %}${{ order.shipping_cost }}{% endif %}</span></div>
+        <div class="summary-row summary-total"><span>Total</span><span>${{ order.total_price }}</span></div>
+      </div>
+
+      {% if order.tracking_number %}
+      <div class="checkout-card mt-4">
+        <h5 class="checkout-card-title"><i class="bi bi-truck me-2 text-accent"></i>Tracking</h5>
+        <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+        {% if order.tracking_url %}<a href="{{ order.tracking_url }}" target="_blank" class="btn ffang-btn-outline btn-sm">Track Package</a>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+      <div class="checkout-card">
+        <h5 class="checkout-card-title">Shipping To</h5>
+        <p class="mb-1"><strong>{{ order.shipping_name }}</strong></p>
+        <p class="mb-1 text-muted">{{ order.shipping_email }}</p>
+        <p class="mb-1 text-muted">{{ order.shipping_address }}</p>
+        <p class="mb-0 text-muted">{{ order.shipping_city }}, {{ order.shipping_country }}</p>
+      </div>
+      <div class="checkout-card mt-3">
+        <h5 class="checkout-card-title">Payment</h5>
+        <p class="mb-1">Method: <strong>{{ order.get_payment_method_display }}</strong></p>
+        <p class="mb-0">Status: <strong class="{% if order.payment_status == 'paid' %}text-success{% else %}text-warning{% endif %}">{{ order.payment_status|capfirst }}</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
